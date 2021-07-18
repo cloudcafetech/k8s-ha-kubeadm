@@ -131,8 +131,8 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 echo "export KUBECONFIG=$HOME/.kube/config" >> $HOME/.bash_profile
 
 # Host setup Script Download
-wget https://raw.githubusercontent.com/cloudcafetech/kubesetup/master/k8s-host-setup.sh
-wget https://raw.githubusercontent.com/cloudcafetech/kubesetup/master/node-joining-script.sh
+wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/k8s-host-setup.sh
+wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/node-joining-script.sh
 chmod +x ./k8s-host-setup.sh
 chmod +x ./node-joining-script.sh
 
