@@ -97,7 +97,14 @@ systemctl status haproxy
 
 # Verify
 echo "Verify HA Proxy Load Balancer .."
-nc -v -w 1 localhost 6443
+LBTEST=`nc -w 2 -v nc -v -w 1 localhost 6443 </dev/null; echo $?`
+if [[ "$LBTEST" == "0" ]]; then
+  echo "OK - Load Balancer (localhost) on port (6443) responding."
+else 
+  echo "NOT Good - Load Balancer (localhost) on port (6443) NOT responding."
+  echo "Please Check Load Balancer (localhost) on port (6443), before proceeding."
+  exit
+fi
 
 # Setup Minio
 mkdir -p /root/minio/data
