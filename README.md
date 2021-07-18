@@ -1,2 +1,2 @@
-# k8s-ha-kubeadm
+# Kubernetes HA Setup
 Kubernetes HA setup using Kubeadm
