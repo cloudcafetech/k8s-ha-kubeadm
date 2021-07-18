@@ -143,7 +143,7 @@ wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/k8s-set
 chmod +x ./k8s-host-setup.sh
 chmod +x ./k8s-setup.sh
 touch key.pem
-chmod 400 key.pem
+chmod 600 key.pem
 
 # Install Krew
 set -x; cd "$(mktemp -d)" &&
