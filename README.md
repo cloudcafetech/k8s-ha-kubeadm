@@ -17,7 +17,7 @@ Kubernetes HA setup using Kubeadm
 
 ```
 wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/haproxy-lb-setup.sh
-wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/node-joining-script.sh
+wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/k8s-setup.sh
 ```
 
 - Edit & update IP details of Masters,Nodes & Load Balancer, make executable & Run 
@@ -27,7 +27,12 @@ vi haproxy-lb-setup.sh
 chmod 755 haproxy-lb-setup.sh
 ./haproxy-lb-setup.sh
 
-vi node-joining-script.sh
-chmod 755 node-joining-script.sh
-./node-joining-script.sh
+vi k8s-setup.sh
+chmod 755 k8s-setup.sh
+./k8s-setup.sh
+```
+
+- Post Setup
+
+```
 ```
