@@ -85,6 +85,7 @@ echo "export KUBECONFIG=$HOME/.kube/config" >> $HOME/.bash_profile
 export KUBECONFIG=$HOME/.kube/config
 kubectl get node
 wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/kube-ingress.yaml
+wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/sample-app.yaml
 wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/calico.yaml
 kubectl apply -f calico.yaml
 #kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
