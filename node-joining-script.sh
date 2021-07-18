@@ -64,6 +64,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 tokenSHA=$(ssh $USER@$MASTER1_IP -o 'StrictHostKeyChecking no' -i $PEMKEY "sudo openssl x509 -in /etc/kubernetes/pki/ca.crt -noout -pubkey | sudo openssl rsa -pubin -outform DER 2>/dev/null | sha256sum | cut -d' ' -f1")
 joinMaster="sudo kubeadm join $HA_PROXY_LB_DNS:$HA_PROXY_LB_PORT --token=$TOKEN --control-plane --certificate-key=$CERTKEY --discovery-token-ca-cert-hash sha256:$tokenSHA --ignore-preflight-errors=all"
 joinNode="sudo kubeadm join $HA_PROXY_LB_DNS:$HA_PROXY_LB_PORT --token=$TOKEN --discovery-token-ca-cert-hash sha256:$tokenSHA --ignore-preflight-errors=all"
+
 # Setup for Master 2
 echo "Joining Masters #2"
 ssh $USER@$MASTER2_IP -o 'StrictHostKeyChecking no' -i $PEMKEY $joinMaster
