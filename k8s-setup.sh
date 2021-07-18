@@ -84,10 +84,19 @@ done
 echo "export KUBECONFIG=$HOME/.kube/config" >> $HOME/.bash_profile
 export KUBECONFIG=$HOME/.kube/config
 kubectl get node
-wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/kube-ingress.yaml
-wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/sample-app.yaml
 wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/calico.yaml
 kubectl apply -f calico.yaml
 #kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
 #kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 #kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+# Setup Ingress
+wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/kube-ingress.yaml
+kubectl create ns kube-router
+kubectl create -f kube-ingress.yaml
+kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+
+# Setup Demo Application
+wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/sample-app.yaml
+kubectl create ns demo-mongo
+kubectl create -f sample-app.yaml -n demo-mongo
