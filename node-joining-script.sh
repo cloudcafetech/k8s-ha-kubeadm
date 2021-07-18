@@ -43,7 +43,7 @@ done
 for hip in $MASTER1_IP $MASTER2_IP $MASTER3_IP $NODE1
 do
 echo "K8S Host Preparation on $hip"
-ssh $USER@$hip -o 'StrictHostKeyChecking no' -i $PEMKEY "wget https://raw.githubusercontent.com/cloudcafetech/kubesetup/master/k8s-host-setup.sh"
+ssh $USER@$hip -o 'StrictHostKeyChecking no' -i $PEMKEY "wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/k8s-host-setup.sh"
 ssh $USER@$hip -o 'StrictHostKeyChecking no' -i $PEMKEY "chmod +x /home/$USER/k8s-host-setup.sh"
 ssh $USER@$hip -o 'StrictHostKeyChecking no' -i $PEMKEY "/home/$USER/k8s-host-setup.sh"
 done
@@ -83,7 +83,7 @@ done
 echo "export KUBECONFIG=$HOME/.kube/config" >> $HOME/.bash_profile
 export KUBECONFIG=$HOME/.kube/config
 kubectl get node
-wget https://raw.githubusercontent.com/cloudcafetech/kubesetup/master/calico.yaml
+wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/calico.yaml
 kubectl apply -f calico.yaml
 #kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
 #kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
