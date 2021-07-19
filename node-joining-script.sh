@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Controlpane & node joining script
+# Controlpane & Workernode joining script
 # Note: If certificate-key expire, generate new using (kubeadm init phase upload-certs --upload-certs)
 
 ADDMASTER1=172.31.21.8
