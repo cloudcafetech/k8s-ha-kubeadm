@@ -15,8 +15,8 @@ PEMKEY=key.pem
 # Validating
 master=$1
 if [[ ! $master =~ ^( |master|node)$ ]]; then 
- echo "Usage: host-setup.sh <master or node>"
- echo "Example: host-setup.sh master/node"
+ echo "Usage: node-joining-script.sh <master or node>"
+ echo "Example: node-joining-script.sh master/node"
  exit
 fi
 
