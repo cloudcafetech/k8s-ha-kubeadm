@@ -97,7 +97,7 @@ systemctl status haproxy
 
 # Verify
 echo "Verify HA Proxy Load Balancer .."
-LBTEST=`nc -w 2 -v nc -v -w 1 localhost 6443 </dev/null; echo $?`
+LBTEST=`nc -v -w 1 localhost 6443 </dev/null; echo $?`
 if [[ "$LBTEST" == "0" ]]; then
   echo "OK - Load Balancer (localhost) on port (6443) responding."
 else 
