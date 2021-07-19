@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Controlpane & node joining script
+# K8S Setup script
 # Note: If certificate-key expire, generate new using (kubeadm init phase upload-certs --upload-certs)
 
 HA_PROXY_LB_DNS=172.31.28.212
