@@ -7,14 +7,14 @@ data:
   etcd-backup.sh: |
     #!/bin/sh
     # ETCD Backup Cron Script
-    
+
     # Kubeconfig
     KUBECONFIG=
-    NOW=$(date +'%d%m%Y-%H%M%S')
-    
+    NOW=`printf "%(%d%m%Y-%H%M%S)T"`
+
     # Backup ETCD
-    etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt --key=/etc/kubernetes/pki/etcd/healthcheck-client.key snapshot save /backup/etcd-snapshot-$NOW.db"
-    
+    etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt --key=/etc/kubernetes/pki/etcd/healthcheck-client.key snapshot save /backup/etcd-snapshot-$NOW.db
+
     # Uploading files to Minio Bucket
     echo "Uploading files to backup location"
     mc config host add minio http://$MINIO_SERVER:9000 $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY --insecure
@@ -50,25 +50,26 @@ spec:
             # Same image as in /etc/kubernetes/manifests/etcd.yaml
             #image: k8s.gcr.io/etcd-amd64:3.1.12
             image: prasenforu/etcd-backup:v0.1
+            args:
             - /bin/sh
             - /tmp/etcd-backup.sh
             env:
             - name: ETCDCTL_API
               value: "3"
-           - name: BUCKET
-             value: "prodetcd"
-           - name: MINIO_SERVER
-             value: "10.128.0.24"
-           - name: AWS_ACCESS_KEY_ID
-             valueFrom:
-               secretKeyRef:
-                 name: s3minio-secrets
-                 key: AWS_ACCESS_KEY_ID
-           - name: AWS_SECRET_ACCESS_KEY
-             valueFrom:
-               secretKeyRef:
-                 name: s3minio-secrets
-                 key: AWS_SECRET_ACCESS_KEY
+            - name: BUCKET
+              value: "prodetcd"
+            - name: MINIO_SERVER
+              value: "172.31.25.231"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: s3minio-secrets
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: s3minio-secrets
+                  key: AWS_SECRET_ACCESS_KEY
             volumeMounts:
             - mountPath: /etc/kubernetes/pki
               name: kube-certs
@@ -83,7 +84,8 @@ spec:
               name: etcd-backup-script-volume-config
           restartPolicy: OnFailure
           nodeSelector:
-            kubernetes.io/hostname: kube-master
+            node-role.kubernetes.io/master: ""
+            #kubernetes.io/hostname: kube-master
           tolerations:
           - effect: NoSchedule
             operator: Exists
