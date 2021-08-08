@@ -51,5 +51,51 @@ docker run --rm \
 # Remove SNAP file due to ETCD "member unknown"
 rm -rf /var/lib/etcd/member/snap/*.snap
 
+# Validate all restored files under temporay backup
+for f in ca.crt ca.key front-proxy-ca.crt front-proxy-ca.key sa.key sa.pub "$FILE"
+do
+ if [ ! -f $DIR/$f ]; then
+  echo "File ($f) not found in $DIR .."
+  echo "Please restore files properly, rerun etcd-restrore.sh"  
+  break
+ fi
+done
+
+for e in ca.crt ca.key 
+do
+ if [ ! -f $DIR/etcd/$e ]; then
+  echo "File ($e) not found in $DIR/etcd .."
+  echo "Please restore files properly, rerun etcd-restrore.sh"  
+  exit
+ fi
+done
+
+# Validate all restored files under /etc/kubernetes/pki/
+for f in ca.crt ca.key front-proxy-ca.crt front-proxy-ca.key sa.key sa.pub
+do
+ if [ ! -f /etc/kubernetes/pki/$f ]; then
+  echo "File ($f) not found .."
+  echo "Please restore files properly, rerun etcd-restrore.sh"  
+  break
+ fi
+done
+
+# Validate all restored files under /etc/kubernetes/pki/etcd/
+for e in ca.crt ca.key 
+do
+ if [ ! -f /etc/kubernetes/pki/etcd/$e ]; then
+  echo "File ($e) not found .."
+  echo "Please restore files properly, rerun etcd-restrore.sh"  
+  exit
+ fi
+done
+
+# Validate etcd folder under /var/lib
+if [ ! -d /var/lib/etcd ]; then
+ echo "Folder (etcd) not found under /var/lib .."
+ echo "Please restore files properly, rerun etcd-restrore.sh"  
+ exit
+fi
+
 # Initilise Kubernetes
 kubeadm init --ignore-preflight-errors=DirAvailable--var-lib-etcd
