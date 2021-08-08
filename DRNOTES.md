@@ -30,6 +30,8 @@ docker run -d -p 9000:9000 --restart=always --name minio \
   
 ### Backup ETCD 
 
+Update Minio Server IP & Port
+
 ```kubectl create -f etcd-backup-job.yaml```
 
 ### Similate Disaster
@@ -40,6 +42,8 @@ Make sure etcd backup done ...
 
 
 ### Restore ETCD
+
+Update Minio Server IP & Port
 
 ```./etcd-restore.sh```
 
