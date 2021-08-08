@@ -52,7 +52,7 @@ done
 echo "Initialize Masters #1"
 # For Calico Networking
 joinMaster1="sudo kubeadm init --token=$TOKEN --control-plane-endpoint $HA_PROXY_LB_DNS:$HA_PROXY_LB_PORT --pod-network-cidr=192.168.0.0/16 --upload-certs --certificate-key=$CERTKEY --ignore-preflight-errors=all | tee kubeadm-output.txt"
-# For Flannel & WeaveNet Networking
+# For WeaveNet Networking
 #joinMaster1="sudo kubeadm init --token=$TOKEN --control-plane-endpoint $HA_PROXY_LB_DNS:$HA_PROXY_LB_PORT --upload-certs --certificate-key=$CERTKEY --ignore-preflight-errors=all | tee kubeadm-output.txt"
 ssh $USER@$MASTER1_IP -o 'StrictHostKeyChecking no' -i $PEMKEY $joinMaster1
 ssh $USER@$MASTER1_IP -o 'StrictHostKeyChecking no' -i $PEMKEY "sudo cp /etc/kubernetes/admin.conf /home/$USER/config"
@@ -88,7 +88,6 @@ wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/calico.
 kubectl apply -f calico.yaml
 #kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
 #kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
-#kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
 # Setup Ingress
 wget https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/kube-ingress.yaml
