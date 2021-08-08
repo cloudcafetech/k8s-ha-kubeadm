@@ -52,7 +52,7 @@ docker run --rm \
     -v "$DIR:/backup" \
     -v '/var/lib/etcd:/var/lib/etcd' \
     --env ETCDCTL_API=3 \
-    'k8s.gcr.io/etcd-amd64:3.1.12' \
+    'k8s.gcr.io/etcd:3.5.0-0' \
     /bin/sh -c "etcdctl snapshot restore '/backup/$FILE' ; mv /default.etcd/member/ /var/lib/etcd/"
 
 # Remove SNAP file due to ETCD "member unknown"
