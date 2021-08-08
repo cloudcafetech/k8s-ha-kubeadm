@@ -1,0 +1,25 @@
+kubeadm init --ignore-preflight-errors=all 
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
+MASTER=`kubectl get nodes | grep master | awk '{print $1}'`
+kubectl taint nodes $MASTER node-role.kubernetes.io/master-
+kubectl get nodes -o json | jq .items[].spec.taints
+
+rm -f /etc/cni/net.d/*flannel*
+
+umount $(df -HT | grep '/var/lib/kubelet/pods' | awk '{print $7}')
+
+docker run -d -p 9000:9000 --restart=always --name minio \
+  -e "MINIO_ACCESS_KEY=admin" \
+  -e "MINIO_SECRET_KEY=admin2675" \
+  -v /root/minio/data:/data \
+  -v /root/minio/config:/root/.minio \
+  minio/minio server /data
+
+MinIO=172.31.21.248
+wget https://dl.min.io/client/mc/release/linux-amd64/mc; chmod +x mc; mv -v mc /usr/local/bin/mc
+mc config host add minio http://$MinIO:9000 admin admin2675 --insecure
+mc mb minio/prodetcd --insecure
+
+rm -rf /etc/kubernetes /var/lib/etcd /var/lib/kubelet; docker kill `docker ps -a | grep -v minio | awk '{print $1'} | grep -v CONTAINER`; docker rm `docker ps -a | grep -v minio | awk '{print $1'} | grep -v CONTAINER`;systemctl stop docker;systemctl stop kubelet;umount $(df -HT | grep '/var/lib/kubelet/pods' | awk '{print $7}')
+
