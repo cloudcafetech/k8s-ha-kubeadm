@@ -19,8 +19,10 @@ data:
     echo "Uploading files to backup location"
     mc config host add minio http://$MINIO_SERVER:9000 $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY --insecure
     mc mb minio/$BUCKET --insecure
-    mc cp -a /etc/kubernetes/pki/ca.crt minio/$BUCKET
-    mc cp -a /etc/kubernetes/pki/ca.key minio/$BUCKET
+    mc mb minio/$BUCKET/etcd --insecure
+    mc cp -a /etc/kubernetes/pki/*ca.* minio/$BUCKET
+    mc cp -a /etc/kubernetes/pki/sa.* minio/$BUCKET
+    mc cp -a /etc/kubernetes/pki/etcd/*ca.* minio/$BUCKET/etcd/
     mc cp -a /backup/etcd-snapshot-$NOW.db minio/$BUCKET
 ---
 apiVersion: v1
@@ -59,7 +61,7 @@ spec:
             - name: BUCKET
               value: "prodetcd"
             - name: MINIO_SERVER
-              value: "172.31.25.231"
+              value: "172.31.29.182"
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
