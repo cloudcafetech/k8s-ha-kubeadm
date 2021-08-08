@@ -3,7 +3,7 @@
 
 ETCDCTL_API=3
 BUCKET=prodetcd
-MINIO_SERVER=172.31.29.182
+MINIO_SERVER=172.31.21.248
 AWS_ACCESS_KEY_ID=admin
 AWS_SECRET_ACCESS_KEY=admin2675
 NOW=$(date +'%d%m%Y-%H%M%S')
@@ -11,6 +11,13 @@ NOW=$(date +'%d%m%Y-%H%M%S')
 DIR="$(pwd)/bkp-$NOW"
 rm -rf "${DIR}"
 mkdir -p "${DIR}/etcd"
+
+# Install Minio Client
+if ! command -v mc &> /dev/null;
+then
+ echo "Installing Minio Client."
+ wget https://dl.min.io/client/mc/release/linux-amd64/mc; chmod +x mc; mv -v mc /usr/local/bin/mc
+fi
 
 # Downloading files from Minio Bucket
 echo "Downloading files from Minio Bucket"
@@ -56,16 +63,16 @@ for f in ca.crt ca.key front-proxy-ca.crt front-proxy-ca.key sa.key sa.pub "$FIL
 do
  if [ ! -f $DIR/$f ]; then
   echo "File ($f) not found in $DIR .."
-  echo "Please restore files properly, rerun etcd-restrore.sh"  
+  echo "Please restore files properly, rerun etcd-restrore.sh"
   break
  fi
 done
 
-for e in ca.crt ca.key 
+for e in ca.crt ca.key
 do
  if [ ! -f $DIR/etcd/$e ]; then
   echo "File ($e) not found in $DIR/etcd .."
-  echo "Please restore files properly, rerun etcd-restrore.sh"  
+  echo "Please restore files properly, rerun etcd-restrore.sh"
   exit
  fi
 done
@@ -75,17 +82,17 @@ for f in ca.crt ca.key front-proxy-ca.crt front-proxy-ca.key sa.key sa.pub
 do
  if [ ! -f /etc/kubernetes/pki/$f ]; then
   echo "File ($f) not found .."
-  echo "Please restore files properly, rerun etcd-restrore.sh"  
+  echo "Please restore files properly, rerun etcd-restrore.sh"
   break
  fi
 done
 
 # Validate all restored files under /etc/kubernetes/pki/etcd/
-for e in ca.crt ca.key 
+for e in ca.crt ca.key
 do
  if [ ! -f /etc/kubernetes/pki/etcd/$e ]; then
   echo "File ($e) not found .."
-  echo "Please restore files properly, rerun etcd-restrore.sh"  
+  echo "Please restore files properly, rerun etcd-restrore.sh"
   exit
  fi
 done
@@ -93,7 +100,7 @@ done
 # Validate etcd folder under /var/lib
 if [ ! -d /var/lib/etcd ]; then
  echo "Folder (etcd) not found under /var/lib .."
- echo "Please restore files properly, rerun etcd-restrore.sh"  
+ echo "Please restore files properly, rerun etcd-restrore.sh"
  exit
 fi
 
