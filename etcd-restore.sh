@@ -9,6 +9,12 @@ AWS_ACCESS_KEY_ID=admin
 AWS_SECRET_ACCESS_KEY=admin2675
 NOW=$(date +'%d%m%Y-%H%M%S')
 
+HA_PROXY_LB_DNS=172.31.28.212
+HA_PROXY_LB_PORT=6443
+DATE=$(date +"%d%m%y")
+TOKEN=$DATE.1a7dd4cc8d1f4cc5
+CERTKEY=d60a03f140d7f245c06879ac6ab22aa3408b85a60edb94917d67add3dc2a5fa7
+
 DIR="$(pwd)/bkp-$NOW"
 rm -rf "${DIR}"
 mkdir -p "${DIR}/etcd"
@@ -122,3 +128,5 @@ fi
 
 # Initilise Kubernetes
 kubeadm init --ignore-preflight-errors=DirAvailable--var-lib-etcd
+#kubeadm init --token=$TOKEN --control-plane-endpoint $HA_PROXY_LB_DNS:$HA_PROXY_LB_PORT --pod-network-cidr=192.168.0.0/16 --upload-certs --certificate-key=$CERTKEY --ignore-preflight-errors=DirAvailable--var-lib-etcd | tee kubeadm-output.txt
+#kubeadm init --token=$TOKEN --control-plane-endpoint $HA_PROXY_LB_DNS:$HA_PROXY_LB_PORT --upload-certs --certificate-key=$CERTKEY --ignore-preflight-errors=DirAvailable--var-lib-etcd | tee kubeadm-output.txt
