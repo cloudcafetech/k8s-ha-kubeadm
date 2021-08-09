@@ -36,9 +36,9 @@ systemctl daemon-reload;systemctl restart kubelet
 
 ```kubectl uncordon <Node which upgrade just now done>```
 
-### 2nd Master & 3rd Master Node
+### 2nd Master Node
 
-Repeat Step#2, Step#3 
+Repeat Step#2 & Step#3 
 
 - Step#8 Drain the 2nd Master Node
 
@@ -61,19 +61,13 @@ systemctl daemon-reload;systemctl restart kubelet
 
 ### 3rd Master Node
 
-Repeat 
-
-- Step#2 
-- Step#3 
+Repeat Step#2 & Step#3 
 
 - Step#12 Drain the 3rd Master Node
 
 ```kubectl drain <3rd Master Node Name> --ignore-daemonsets```
 
-Repeat 
-
-- Step#8 
-- Step#9
+Repeat Step#8 & Step#9
 
 - Step#13 Uncordon the 3rd Master node (Bring the node back online by marking it schedulable)
 
@@ -84,19 +78,13 @@ Note: Do not upgrade the worker nodes parallel. Upgrade one node at a time
 
 ### 1st Worker Node
 
-Repeat 
-
-- Step#2 
-- Step#3 
+Repeat Step#2 & Step#3 
 
 - Step#14 Drain the 1st Worker Node
 
 ```kubectl drain <1st Worker Node Name> --ignore-daemonsets```
 
-Repeat 
-
-- Step#8 
-- Step#9
+Repeat Step#8 & Step#9
 
 - Step#15 Uncordon the 1st Worker node (Bring the node back online by marking it schedulable)
 
@@ -104,19 +92,13 @@ Repeat
 
 ### 2nd Worker Node
 
-Repeat 
-
-- Step#2 
-- Step#3 
+Repeat Step#2 & Step#3  
 
 - Step#16 Drain the 2nd Worker Node
 
 ```kubectl drain <2nd Worker Node Name> --ignore-daemonsets```
 
-Repeat 
-
-- Step#8 
-- Step#9
+Repeat Step#8 & Step#9
 
 - Step#17 Uncordon the 2nd Worker node (Bring the node back online by marking it schedulable)
 
