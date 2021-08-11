@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Kubernetes host setup script for Linux (CentOS,RHEL,Amazon)
 
-#K8S_VER=1.14.5
+K8S_VER=1.20.0
 #K8S_VER=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt | cut -d v -f2)
 #curl -s https://packages.cloud.google.com/apt/dists/kubernetes-xenial/main/binary-amd64/Packages | grep Version | awk '{print $2}' | more
 
@@ -17,7 +17,8 @@ then
     echo "Installing Docker for Amazon Linux"
     sudo amazon-linux-extras install docker -y
   else
-    sudo curl -s https://releases.rancher.com/install-docker/19.03.sh | sh
+    #sudo curl -s https://releases.rancher.com/install-docker/19.03.sh | sh
+    sudo curl -s https://releases.rancher.com/install-docker/20.10.sh | sh    
   fi    
 fi
 
