@@ -4,7 +4,9 @@
 ### Initiate Kubernetes
 
 ```
-curl -s https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/k8s-host-setup.sh | bash
+curl -o k8s-host-setup.sh https://raw.githubusercontent.com/cloudcafetech/k8s-ha-kubeadm/main/k8s-host-setup.sh
+chmod +x k8s-host-setup.sh
+./k8s-host-setup.sh
 kubeadm init --ignore-preflight-errors=all 
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 ```
