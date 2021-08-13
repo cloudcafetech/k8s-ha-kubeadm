@@ -11,22 +11,21 @@ sudo yum install -y git curl wget bind-utils jq httpd-tools zip unzip nfs-utils 
 # Install Docker
 if ! command -v docker &> /dev/null;
 then
-  echo "MISSING REQUIREMENT: docker engine could not be found on your system. Please install docker engine to continue: https://docs.docker.com/get-docker/"
+  echo "MISSING REQUIREMENT: docker not found. Please install docker : https://docs.docker.com/get-docker/"
   echo "Trying to Install Docker..."
   if [[ $(uname -a | grep amzn) ]]; then
     echo "Installing Docker for Amazon Linux"
     sudo amazon-linux-extras install docker -y
   else
     #sudo curl -s https://releases.rancher.com/install-docker/19.03.sh | sh
-    sudo curl -s https://releases.rancher.com/install-docker/20.10.sh | sh    
-  fi    
+    sudo curl -s https://releases.rancher.com/install-docker/20.10.sh | sh
+  fi
 fi
 
-sudo systemctl start docker; sudo systemctl status docker; sudo systemctl enable docker
+sudo systemctl start docker; sudo systemctl enable docker
 
 # Stopping and disabling firewalld by running the commands on all servers:
-sudo systemctl stop firewalld
-sudo systemctl disable firewalld
+sudo systemctl stop firewalld; sudo systemctl disable firewalld
 
 # Disable swap. Kubeadm will check to make sure that swap is disabled when we run it, so lets turn swap off and disable it for future reboots.
 sudo swapoff -a
@@ -36,7 +35,7 @@ sudo sed -i.bak -r 's/(.+ swap .+)/#\1/' /etc/fstab
 sudo setenforce 0
 sudo sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
 
-# Add the kubernetes repository to yum so that we can use our package manager to install the latest version of kubernetes. 
+# Add the kubernetes repository to yum so that we can use our package manager to install the latest version of kubernetes.
 sudo cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
@@ -48,8 +47,8 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 exclude=kubelet kubeadm kubectl
 EOF
 
-# Change default cgroup driver to systemd 
-sudo cat > daemon.json <<EOF
+# Change default cgroup driver to systemd
+sudo cat > /etc/docker/daemon.json <<EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
@@ -60,18 +59,14 @@ sudo cat > daemon.json <<EOF
 }
 EOF
 
-sudo cp daemon.json /etc/docker/daemon.json
-sudo systemctl start docker; sudo systemctl status docker; sudo systemctl enable docker
-
-sudo cat <<EOF > k8s.conf
+sudo cat <<EOF > /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 EOF
 
-sudo cp k8s.conf /etc/sysctl.d/k8s.conf
 sudo sysctl --system
-sudo systemctl restart docker
-sudo systemctl status docker
+sudo systemctl restart docker; sudo systemctl enable docker
+sudo systemctl start docker; sudo systemctl enable docker
 
 # Installation with specefic version
 #yum install -y kubelet-$K8S_VER kubeadm-$K8S_VER kubectl-$K8S_VER kubernetes-cni-0.6.0 --disableexcludes=kubernetes
