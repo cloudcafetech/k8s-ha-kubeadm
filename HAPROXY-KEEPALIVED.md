@@ -151,5 +151,7 @@ systemctl restart keepalived
 ```systemctl status haproxy; systemctl status keepalived```
 
 [Ref #1](https://kubesphere.io/docs/installing-on-linux/high-availability-configurations/set-up-ha-cluster-using-keepalived-haproxy/)
+
 [Ref #2](https://metal.equinix.com/developers/guides/load-balancing-ha/)
+
 [Ref #3](https://github.com/kubernetes/kubeadm/blob/master/docs/ha-considerations.md)
