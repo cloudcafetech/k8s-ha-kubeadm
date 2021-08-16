@@ -147,7 +147,7 @@ vrrp_instance VI_2 {
 EOF
 ```
 
-#### Configure Keepalived for Primary server (MASTER)
+#### Configure Keepalived for Peer server (BACKUP)
 
 ```
 >/etc/keepalived/keepalived.conf
