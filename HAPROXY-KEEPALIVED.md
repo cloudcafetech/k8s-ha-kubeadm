@@ -8,7 +8,36 @@ As Keepalived and HAproxy are installed on lb1 and lb2, if either one goes down,
 
 #### Install Keepalived and HAproxy
 
-```yum install keepalived haproxy psmisc -y```
+```
+yum install keepalived haproxy psmisc nmap telnet git -y
+if ! command -v kubectl &> /dev/null;
+then
+ echo "Installing Kubectl"
+ K8S_VER=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+ wget -q https://storage.googleapis.com/kubernetes-release/release/$K8S_VER/bin/linux/amd64/kubectl
+ chmod +x ./kubectl; mv ./kubectl /usr/bin/kubectl
+ echo "alias oc=/usr/bin/kubectl" >> /root/.bash_profile
+fi 
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+set -x; cd "$(mktemp -d)" &&
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.{tar.gz,yaml}" &&
+  tar zxvf krew.tar.gz &&
+  KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" &&
+  "$KREW" install --manifest=krew.yaml --archive=krew.tar.gz &&
+  "$KREW" update
+
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+kubectl krew install modify-secret
+kubectl krew install ctx
+kubectl krew install ns
+kubectl krew install cost
+
+echo 'export PATH="${PATH}:${HOME}/.krew/bin"' >> /root/.bash_profile
+exit
+```
 
 #### Create configuration of HAproxy
 
@@ -50,7 +79,7 @@ EOF
 
 ### Keepalived
 
-#### Configure Keepalived
+#### Configure Keepalived for Primary server (MASTER)
 
 ```
 >/etc/keepalived/keepalived.conf
@@ -78,6 +107,9 @@ vrrp_script test-apiserver {
 vrrp_instance VI_1 {
     state MASTER
     interface eth0
+    unicast_src_ip 172.31.16.11    # The IP address of this machine (MASTER)
+    unicast_peer {
+        172.31.16.12               # The IP address of peer machines (BACKUP)    
     virtual_router_id 101
     priority 101
     authentication {
@@ -85,7 +117,7 @@ vrrp_instance VI_1 {
         auth_pass 1111
     }
     virtual_ipaddress {
-        172.31.27.4
+        172.31.27.4                # The VIP address
     }
     track_script {
         prod-apiserver
@@ -94,14 +126,86 @@ vrrp_instance VI_1 {
 vrrp_instance VI_2 {
     state MASTER
     interface eth0
+    unicast_src_ip 172.31.16.11    # The IP address of this machine (MASTER)
+    unicast_peer {
+        172.31.16.12               # The IP address of peer machines (BACKUP)
+    }    
     virtual_router_id 102
-    priority 102
+    priority 101
     authentication {
         auth_type PASS
         auth_pass 1111
     }
     virtual_ipaddress {
-        172.31.16.10
+        172.31.16.10               # The VIP address
+    }
+    track_script {
+        test-apiserver
+    }
+
+}
+EOF
+```
+
+#### Configure Keepalived for Primary server (MASTER)
+
+```
+>/etc/keepalived/keepalived.conf
+cat > /etc/keepalived/keepalived.conf << EOF
+global_defs {
+    router_id LVS_DEVEL
+}
+
+vrrp_script prod-apiserver {
+  script "/etc/keepalived/prod-apiserver.sh"
+  interval 3
+  weight -2
+  fall 10
+  rise 2
+}
+
+vrrp_script test-apiserver {
+  script "/etc/keepalived/test-apiserver.sh"
+  interval 3
+  weight -2
+  fall 10
+  rise 2
+}
+
+vrrp_instance VI_1 {
+    state BACKUP
+    interface eth0
+    unicast_src_ip 172.31.16.12    # The IP address of this machine (BACKUP)
+    unicast_peer {
+        172.31.16.11               # The IP address of peer machines (MASTER)    
+    virtual_router_id 101
+    priority 100
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        172.31.27.4                # The VIP address
+    }
+    track_script {
+        prod-apiserver
+    }
+
+vrrp_instance VI_2 {
+    state BACKUP
+    interface eth0
+    unicast_src_ip 172.31.16.12    # The IP address of this machine (BACKUP)
+    unicast_peer {
+        172.31.16.11               # The IP address of peer machines (MASTER)
+    }    
+    virtual_router_id 102
+    priority 100
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        172.31.16.10               # The VIP address
     }
     track_script {
         test-apiserver
