@@ -48,12 +48,12 @@ frontend kube-apiserver
    bind 0.0.0.0:6443
    mode tcp
    option tcplog
-   #default_backend prod-apiserver
+   default_backend prod-apiserver
    #default_backend test-apiserver
-   acl prod src 172.31.27.4
-   acl test src 172.31.16.10
-   use_backend prod-apiserver if prod
-   use_backend test-apiserver if test
+   #acl prod src ip-172-31-23-216.us-east-2.compute.internal
+   #acl test src ip-172-31-16-10.us-east-2.compute.internal
+   #use_backend prod-apiserver if prod
+   #use_backend test-apiserver if test
 
 backend prod-apiserver
     mode tcp
@@ -61,7 +61,7 @@ backend prod-apiserver
     option tcp-check
     balance roundrobin
     default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100
-    server ip-172-31-24-38.us-east-2.compute.internal 172.31.24.38:6443 check
+    server ip-172-31-30-82.us-east-2.compute.internal 172.31.30.82:6443 check
 
 backend test-apiserver
     mode tcp
@@ -69,7 +69,7 @@ backend test-apiserver
     option tcp-check
     balance roundrobin
     default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100
-    server ip-172-31-17-153.us-east-2.compute.internal 172.31.17.153:6443 check
+    server ip-172-31-25-88.us-east-2.compute.internal 172.31.25.88:6443 check
 EOF
 ```
 
