@@ -75,7 +75,7 @@ EOF
 
 #### Restart HAproxy & make it persist through reboots
 
-```systemctl restart haproxy; systemctl enable haproxy```
+```systemctl restart haproxy; systemctl enable haproxy; systemctl status haproxy```
 
 ### Keepalived
 
