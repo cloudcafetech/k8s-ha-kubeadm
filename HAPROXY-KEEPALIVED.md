@@ -44,6 +44,28 @@ exit
 ```
 >/etc/haproxy/haproxy.cfg
 cat > /etc/haproxy/haproxy.cfg << EOF
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    daemon
+
+defaults
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 1
+    timeout http-request    10s
+    timeout queue           20s
+    timeout connect         5s
+    timeout client          20s
+    timeout server          20s
+    timeout http-keep-alive 10s
+    timeout check           10s
+
 frontend kube-apiserver
    bind 0.0.0.0:6443
    mode tcp
@@ -56,17 +78,19 @@ frontend kube-apiserver
    #use_backend test-apiserver if test
 
 backend prod-apiserver
+    option httpchk GET /healthz
+    http-check expect status 200
     mode tcp
-    option tcplog
-    option tcp-check
+    option ssl-hello-chk
     balance roundrobin
     default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100
     server ip-172-31-30-82.us-east-2.compute.internal 172.31.30.82:6443 check
 
 backend test-apiserver
+    option httpchk GET /healthz
+    http-check expect status 200
     mode tcp
-    option tcplog
-    option tcp-check
+    option ssl-hello-chk
     balance roundrobin
     default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100
     server ip-172-31-25-88.us-east-2.compute.internal 172.31.25.88:6443 check
